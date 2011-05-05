@@ -1,0 +1,49 @@
+/*3D係数学を扱う秀丸マクロ
+
+マクロの内部利用。
+*/
+
+$g_exe_filename 		= "math_3d.exe";
+call Main;
+endmacro str(##return);
+
+
+Main:
+	if(! existfile($g_exe_filename)){
+		message("実行ファイルが見つかりません。\n"					+
+				"見つからないファイル：%s" + $g_exe_filename + "\n"	+
+				"マクロと同じディレクトリにコピーして下さい。"
+		);
+		return false;
+	}
+	if(2 != argcount){
+		message("引数の個数が不正です、引数は２個与えて下さい。\n");
+		return false;
+	}
+	
+	$$mode 	= getarg(0);
+	$$arg 	= getarg(1);
+	
+	//10秒待っても切り替えできないエラーを抑制。
+	//seterrormode 1, 0;
+	
+	$$cmd = $g_exe_filename + " " + $$mode + " " + $$arg;
+	message($$cmd);
+	runex $$cmd
+		, 1 			//sync	  0:async 1:sync
+		, 0, "" 		//stdin   0:none 1:auto 2:file 3:(reserve) 4:all 5:select
+		, 7, "" 		//stdout  0:none 1:auto 2:file 3:add file  4:new 5:insert 6:replace 7:output枠
+		, 0, "" 		//stderr  0:none 1:=out 2:file 3:add file  4:new 5:insert 6:replace
+		, 0, "" 		//folder  0:none 1:current 2:specify 3:(reserve) 4:exe's folder
+		, 2 			//show	  0:auto 1:show 2:hide
+		, 1 			//nodraw  0:draw 1:no draw
+		, 0 			//unicode 0:ansi 2:unicode
+		;
+	##ret = result;
+	if(false == ##ret){
+		message("runexで失敗");
+		return false;
+	}
+	return true;
+	
+	

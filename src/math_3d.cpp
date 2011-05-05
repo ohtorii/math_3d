@@ -19,9 +19,9 @@ arg1...N   modeに応じて必要な個数だけ
 Graphics gems
 Game programming gems
 Game developer magazine
-java 3d
+Java 3d
 Real time rendering
-pysics rendering
+Pysics rendering
 ゲームプログラマーになる前に呼んでおくこと
 クォータニオン入門　金谷一郎
 CEDEC講演資料
@@ -46,8 +46,8 @@ typedef unsigned __int64 	uint64;
 
 static void usage(){
     printf(
-        "math.exe option arg1 arg2 ...\n"
-        "option\n"
+        "math.exe mode arg1 arg2 ...\n"
+        "mode\n"
         "  f32_hex      float       -> hex(uint32)\n"
         "  f64_hex      double      -> hex(uint64)\n"
         "  hex_f32      hex(uint32) -> float\n"
@@ -103,10 +103,10 @@ static void usage(){
         "              -----------+----\n"
         "              0.0 0.0 0.0|1.0\n"
         "ex.\n"
-		"math f32_hex 1.0\n"
-		" -> 3f800000\n"
-		"math hex_f32 3f800000\n"
-		" -> 1.000000\n"
+        "math f32_hex 1.0\n"
+        " -> 3f800000\n"
+        "math hex_f32 3f800000\n"
+        " -> 1.000000\n"
         "math d_r 180\n"
         " -> 3.141593\n"
         "math 16_10 a 0xb ffh\n"
@@ -324,11 +324,11 @@ static bool MatrixSub(const TArgInfo &info, FUNC f, size_t unit){
 	if(! (unit<=info.m_arg.size())){
 		return false;
 	}
-	
+
 	TArgInfo 	tmp = info;
 	while(unit <= tmp.m_arg.size()){
 		f(tmp);
-		tmp.m_arg.erase(tmp.m_arg.begin(), tmp.m_arg.begin()+unit);		
+		tmp.m_arg.erase(tmp.m_arg.begin(), tmp.m_arg.begin()+unit);
 	}
 	if(tmp.m_arg.size()){
 		printf("Warning:Remain %d.\n", tmp.m_arg.size());
@@ -615,7 +615,7 @@ static bool HexToFloat32(const TArgInfo &info){
 			uint32 x = strtoul(tmp[i].c_str(),NULL,16);
 			if(0<i){
 				printf(" ");
-			}			
+			}
 			printf("%f", *(float*)&x);
 		}
 		printf("\n");
@@ -634,7 +634,7 @@ static bool HexToFloat64(const TArgInfo &info){
 			uint64 x = _strtoi64(tmp[i].c_str(),NULL,16);
 			if(0<i){
 				printf(" ");
-			}			
+			}
 			//printf("[%016I64x]", x);
 			printf("%f", *(double*)&x);
 		}
@@ -675,7 +675,7 @@ static bool RadianToDegree(const TArgInfo &info){
 	if(! (1<=tmp.size())){
 		return false;
 	}
-	
+
 	TString1D::const_iterator first = tmp.begin();
 	TString1D::const_iterator last 	= tmp.end();
 	for(; first!=last ; ++first){
@@ -705,7 +705,7 @@ static bool DegreeToRadian(const TArgInfo &info){
 */
 static bool FovVerticalToHorizontal(const TArgInfo &info){
 	const TString1D &tmp = info.m_arg;
-	
+
 	double w = atof(tmp[0].c_str());
 	double h = atof(tmp[1].c_str());
 	double fov = deg2rad(atof(tmp[2].c_str()));
@@ -776,7 +776,7 @@ static bool QuatInverse(const TArgInfo &info){
 
 static bool QuatToMat(const TArgInfo &info){
 	const TString1D &tmp = info.m_arg;
-	
+
 	CQuaternion q(tmp[0], tmp[1], tmp[2], tmp[3]);
 	TMatrix m;
 	QuatToMatMain(m,q);
@@ -968,7 +968,7 @@ static bool Mat33RotXYZ(const TArgInfo &info){
 static bool Mat33EulerCommon(const TArgInfo &info, int EulOrd, const char*rot){
 	TMatrix		m(info.m_arg);
 	HMatrix		r;
-	
+
 	ConvertMatrix(r,m);
 	EulerAngles angles = Eul_FromHMatrix(r, EulOrd);
 	printf("%s=%f %f %f\n", rot, rad2deg(angles.x), rad2deg(angles.y), rad2deg(angles.z));
@@ -1024,34 +1024,34 @@ static void ParseArg(TArgInfo &out, int argc, _TCHAR* argv[]){
 }
 
 int _tmain(int argc, _TCHAR* argv[])
-{	
+{
 	bool		result = false;
 	TArgInfo	info;
 
 	ParseArg(info,argc,argv);
 	const std::string &m = info.m_mode;
-	
+
 	//printf("mode=%s\n", m.c_str());
-	
+
 	if("f32_hex" == m){
 		result = Float32ToHex(info);
 	}else if("f64_hex" == m){
 		result = Float64ToHex(info);
 	}else if("hex_f32" == m){
 		result = HexToFloat32(info);
-	}else if("hex_f64" == m){	
+	}else if("hex_f64" == m){
 		result = HexToFloat64(info);
-	}else if("2_10" == m){	
+	}else if("2_10" == m){
 		result = ConvertNumber(info,10,2);
-	}else if("2_16" == m){	
+	}else if("2_16" == m){
 		result = ConvertNumber(info,16,2);
-	}else if("10_2" == m){	
+	}else if("10_2" == m){
 		result = ConvertNumber(info,2,10);
-	}else if("10_16" == m){	
+	}else if("10_16" == m){
 		result = ConvertNumber(info,16,10);
-	}else if("16_2" == m){	
+	}else if("16_2" == m){
 		result = ConvertNumber(info,2,16);
-	}else if("16_10" == m){	
+	}else if("16_10" == m){
 		result = ConvertNumber(info,10,16);
 	}else if("r_d" == m){
 		result = RadianToDegree(info);
@@ -1074,7 +1074,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}else if("q_xyz" == m){
 		result = MatrixSub(info,QuatToXYZ,4);
 	}else if("m33_q" == m){
-		result = MatrixSub(info,Mat33ToQuat,9);		
+		result = MatrixSub(info,Mat33ToQuat,9);
 	}else if("m33_a" == m){
 		result = MatrixSub(info,Mat33ToAAng,9);
 	}else if("m33t" == m){
@@ -1121,7 +1121,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 	usage();
-	
+
 	return 1;
 }
 
@@ -1139,31 +1139,31 @@ int _tmain(int argc, _TCHAR* argv[])
  {
     Vec    out;
     f32        inner, sr;
-    
+
     // cross つまり外積
     out[0] = v0[1] * v1[2] - v0[2] * v1[1];
     out[1] = v0[2] * v1[0] - v0[0] * v1[2];
     out[2] = v0[0] * v1[1] - v0[1] * v1[0];
     // dot  つまり内積
     inner = v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2];
-    
+
     sr = sqrtf(( 1.0f + inner ) * 2.0f );
     q[0] = out[0] / sr;
     q[1] = out[1] / sr;
     q[2] = out[2] / sr;
     q[3] = sr * 0.5f;
- 
+
     return;
  }
 #endif
 
 #if 0
-回転前の座標が x1, y1, z1 
-回転後の座標が x2, y2, z2 だったとすると 
+回転前の座標が x1, y1, z1
+回転後の座標が x2, y2, z2 だったとすると
 
-double Angle = acos((x1 * x2 + y1 * y2 + z1 * z2) / ((x1 * x1 + y1 * y1 + z1 * z1) * (x2 * x2 + y2 * y2 + z2 * z2))); 
+double Angle = acos((x1 * x2 + y1 * y2 + z1 * z2) / ((x1 * x1 + y1 * y1 + z1 * z1) * (x2 * x2 + y2 * y2 + z2 * z2)));
 
-でAngleの中に角度がラジアン単位で入る。 
+でAngleの中に角度がラジアン単位で入る。
 
 回転軸ベクトルは、回転前の位置、回転後の位置、原点（回転の中心点）の3点から、普通にポリゴンの法線ベクトル求める方法で垂直な方向ベクトルを外積で計算してやるだけ。
 #endif

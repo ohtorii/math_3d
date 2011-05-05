@@ -1,0 +1,56 @@
+/*3D係数学を扱う秀丸マクロ
+
+マクロの内部利用。
+*/
+$g_reg_int 		= "(([+-]|0x)?[0-9a-f]+)";
+$g_reg_flt 		= "([+-]?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(f|(e[+-]?[0-9]+))?)";
+$g_reg 			= $g_reg_int + "|" + $g_reg_flt;
+
+setcompatiblemode 0x0003|0x000c|0x0200|0x2000;
+$g_searchbuffer = searchbuffer;
+#g_searchoption = searchoption;
+call Main;
+$ret = $$return;
+setsearch $g_searchbuffer, #g_searchoption; 
+endmacro $ret;
+
+
+Main:
+	##old_column		= column;
+	##old_lineno		= lineno;
+	##old_seltopcolumn	= seltopcolumn;
+	##old_seltoplineno	= seltoplineno;
+	##old_selendcolumn	= selendcolumn;
+	##old_selendlineno	= selendlineno;
+	
+	$$ret="";
+	if(selecting){
+		searchdown2 $g_reg,word,nocasesense,regular,inselect,nohilight;
+	}else{
+		gofiletop;
+		searchdown2 $g_reg,word,nocasesense,regular,nohilight;
+	}
+	while(result){
+		$$text 	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+		$$ret 	= $$ret + "\"" + $$text + "\" ";
+		movetolineno selendcolumn+1, selendlineno;
+		if(! result){
+			break;
+		}
+		finddown;
+	}
+	
+	
+	moveto ##old_column, ##old_lineno;
+	//call SelectRange ##old_seltopcolumn,##old_seltoplineno,##old_selendcolumn,##old_selendlineno;	
+	return $$ret;
+
+SelectRange:
+	escape;
+	movetolineno 1+##1, ##2;
+	beginsel;
+	movetolineno 1+##3, ##4;
+	endsel;
+	return ;
+
+	
