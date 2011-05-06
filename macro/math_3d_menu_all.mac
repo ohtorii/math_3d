@@ -1,0 +1,251 @@
+/*3D係数学を扱う秀丸マクロ
+全部込み
+
+メニューから動作を選択
+アウトプット枠へ出力
+
+＊todo 
+	区切り文字が、「空白・改行」混ざっている。
+
+＊このマクロは「田楽DLL」が必要です、必ずインストールして下さい。
+    http://www.ceres.dti.ne.jp/~sugiura/
+
+（連絡先）
+    http://d.hatena.ne.jp/ohtorii/
+    https://github.com/ohtorii/
+*/
+
+$g_filename_get = currentmacrodirectory + "\\" + "math_3d_get_values.mac";
+$g_filename_run = currentmacrodirectory + "\\" + "math_3d_run.mac";
+
+
+//[0]
+$g_menu_root[0]="スカラー";
+$g_menu_sub[0][0]="float      -> hex(uint32)";
+$g_menu_sub[0][1]="double     -> hex(uint64)";
+$g_menu_sub[0][2]="hex(uint32)-> float";
+$g_menu_sub[0][3]="hex(uint64)-> double";
+$g_menu_sub[0][4]="";//空白で終端
+$g_option[0][0]="f32_hex";
+$g_option[0][1]="f64_hex";
+$g_option[0][2]="hex_f32";
+$g_option[0][3]="hex_f64";
+
+
+//[1]
+$g_menu_root[1]="基数変換";
+$g_menu_sub[1][0]="bin    -> decimal";
+$g_menu_sub[1][1]="bin    -> hex";
+$g_menu_sub[1][2]="decimal-> bin";
+$g_menu_sub[1][3]="decimal-> hex";
+$g_menu_sub[1][4]="hex    -> bin";
+$g_menu_sub[1][5]="hex    -> decimal";
+$g_menu_sub[1][6]="";
+$g_option[1][0]="2_10";
+$g_option[1][1]="2_16";
+$g_option[1][2]="10_2";
+$g_option[1][3]="10_16";
+$g_option[1][4]="16_2";
+$g_option[1][5]="16_10";
+
+//[2]
+$g_menu_root[2]="単位変換";
+$g_menu_sub[2][0]="radian                  -> degree";
+$g_menu_sub[2][1]="degree                  -> radian";
+$g_menu_sub[2][2]="vertical fov(degree)    -> horizontal fov(degree)";
+$g_menu_sub[2][3]="horizontal fov(degree)  -> vertical fov(degree)";
+$g_menu_sub[2][4]="";
+$g_option[2][0]="r_d";
+$g_option[2][1]="d_r";
+$g_option[2][2]="v_h";
+$g_option[2][3]="h_v";
+
+//[3]
+$g_menu_root[3]="クォータニオン";
+$g_menu_sub[3][0]="quaternion length";
+$g_menu_sub[3][1]="quaternion normalize";
+$g_menu_sub[3][2]="quaternion invert";
+$g_menu_sub[3][3]="quaternion -> matrix33";
+$g_menu_sub[3][4]="quaternion -> axis angle";
+$g_menu_sub[3][5]="quaternion -> euler xyz(degree)";
+$g_menu_sub[3][6]="";
+$g_option[3][0]="ql";
+$g_option[3][1]="qn";
+$g_option[3][2]="qi";
+$g_option[3][3]="q_m33";
+$g_option[3][4]="q_a";
+$g_option[3][5]="q_xyz";
+
+//[4]
+$g_menu_root[4]="オイラー角(XYZ)";
+$g_menu_sub[4][0]="x(degree)         -> matrix33";
+$g_menu_sub[4][1]="y(degree)         -> matrix33";
+$g_menu_sub[4][2]="z(degree)         -> matrix33";
+$g_menu_sub[4][3]="euler yxz(degree) -> matrix33";
+$g_menu_sub[4][4]="euler zxy(degree) -> matrix33";
+$g_menu_sub[4][5]="euler zyx(degree) -> matrix33";
+$g_menu_sub[4][6]="euler yzx(degree) -> matrix33";
+$g_menu_sub[4][7]="euler xzy(degree) -> matrix33";
+$g_menu_sub[4][8]="euler xyz(degree) -> matrix33";
+$g_option[4][0]="x_m33";
+$g_option[4][1]="y_m33";
+$g_option[4][2]="z_m33";
+$g_option[4][3]="yxz_m33";
+$g_option[4][4]="zxy_m33";
+$g_option[4][5]="zyx_m33";
+$g_option[4][6]="yzx_m33";
+$g_option[4][7]="xzy_m33";
+$g_option[4][8]="xyz_m33";
+
+//[5]
+$g_menu_root[5]="回転行列";
+$g_menu_sub[5][0] ="matrix33 transpose";
+$g_menu_sub[5][1] ="matrix33 determinant";
+$g_menu_sub[5][2] ="matrix33 invert";
+$g_menu_sub[5][3] ="matrix33 -> quaternion";
+$g_menu_sub[5][4] ="matrix33 -> axis angle";
+$g_menu_sub[5][5] ="matrix33 -> scale xyz";
+$g_menu_sub[5][6] ="matrix33 -> yxz(degree)";
+$g_menu_sub[5][7] ="matrix33 -> zxy(degree)";
+$g_menu_sub[5][8] ="matrix33 -> zyx(degree)";
+$g_menu_sub[5][9] ="matrix33 -> yzx(degree)";
+$g_menu_sub[5][10]="matrix33 -> xzy(degree)";
+$g_menu_sub[5][11]="matrix33 -> xyz(degree)";
+$g_option[5][0]="m33t";
+$g_option[5][1]="m33d";
+$g_option[5][2]="m33i";
+$g_option[5][3]="m33_q";
+$g_option[5][4]="m33_a";
+$g_option[5][5]="m33_s";
+$g_option[5][6]="m33_yxz";
+$g_option[5][7]="m33_zxy";
+$g_option[5][8]="m33_zyx";
+$g_option[5][9]="m33_yzx";
+$g_option[5][10]="m33_xzy";
+$g_option[5][11]="m33_xyz";
+
+
+//[2]
+$g_menu_root[6]="";//空白で終端
+
+
+
+
+//DengakuDLLをロードしたかどうか。
+#g_dengaku_state		= false;
+
+#g_menu_index0=0;
+#g_menu_index1=0;
+
+
+call Main;
+if(#g_dengaku_state){
+	freedll;
+}
+endmacro;
+
+
+Main:
+	call LoadDengaku;
+	if(! ##return){
+		return false;
+	}
+
+	execmacro $g_filename_get;
+	$$args = getresultex(-1);
+	if(! strlen($$args)){
+		return false;
+	}
+	
+	call MakeMenu;
+	if(! ##return){
+		return false;
+	}
+
+	call PopupMenu;
+	$$select_item = $$return;
+	if(! strlen($$select_item)){
+		return false;
+	}
+
+	call PaseMenuString $$select_item;
+	if(! ##return){
+	    return false;
+	}
+
+	$$mode = $g_option[#g_menu_index0][#g_menu_index1];
+	execmacro $g_filename_run, $$mode, $$args;
+	##ret = val(getresultex(-1));
+	return ##ret;
+
+
+MakeMenu:
+	##n = dllfunc("NEWMENU","main");
+	##i = 0;
+	$$root_menu_name = $g_menu_root[##i];
+	while(strlen($$root_menu_name)){
+		$$sub_menu 		 = str(##i);
+		##n=dllfunc("ADDMENUITEM","main",$$root_menu_name,$$sub_menu);
+		##n=dllfunc("NEWMENU",$$sub_menu);
+
+		##j=0;
+		$$sub_menu_name = $g_menu_sub[##i][##j];
+		while(strlen($$sub_menu_name)){
+			##n=dllfunc("ADDMENUITEM","",$$sub_menu_name,"");
+			##j=##j+1;
+			$$sub_menu_name = $g_menu_sub[##i][##j];
+		}
+
+		##i=##i+1;
+		$$root_menu_name = $g_menu_root[##i];
+	}
+	return true;
+
+
+PopupMenu:
+	$$select_item = dllfuncstr("MENU","main",hidemaruhandle(0));
+	if($$select_item == "!") {
+    	//  エラー！！
+    	return "";
+	}else if($$select_item == "0") {
+    	//  キャンセル
+    	return "";
+    }else {
+    }
+	return $$select_item;
+
+
+PaseMenuString:
+	/*
+	"12:34" ->  #g_menu_index0=12;
+				#g_menu_index1=33;
+	*/
+	#g_menu_index0=0;
+	#g_menu_index1=0;
+	$$s = $$1;
+	##i=strstr($$s,":");
+	if(-1 == ##i){
+		message("内部エラー：メニューの返値に : が含まれていない。");
+		return false;
+	}
+	#g_menu_index0 = val(midstr($$s,0,##i));
+	#g_menu_index1 = val(midstr($$s,##i+1)) - 1;
+	return true;
+
+
+LoadDengaku:
+	#g_dengaku_state=false;
+	loaddll hidemarudir + "\\DengakuDLL.dll";
+	if (!result) {
+		message "DLL をロードできませんでした。";
+		return false;
+	}
+	$DLLVer = dllfuncstr("GETVERSION");
+	if (val(leftstr($DLLVer, 1)) < 2) {
+		message "このマクロの実行には Ver.2.00 以降の田楽ＤＬＬが必要です。";
+		freedll;
+		return false;
+	}
+	#g_dengaku_state=true;
+	return true;
+
