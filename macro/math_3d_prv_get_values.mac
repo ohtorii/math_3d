@@ -2,11 +2,10 @@
 
 マクロの内部利用。
 */
-$g_reg_int 		= "(([+-]|0x)?[0-9a-f]+)";
-$g_reg_flt 		= "([+-]?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(f|(e[+-]?[0-9]+))?)";
-$g_reg 			= $g_reg_int + "|" + $g_reg_flt;
+
 
 setcompatiblemode 0x0003|0x000c|0x0200|0x2000;
+$reg_filename 	= currentmacrodirectory+"\\math_3d_prv_reg.mac";
 $g_searchbuffer = searchbuffer;
 #g_searchoption = searchoption;
 call Main;
@@ -16,6 +15,13 @@ endmacro $ret;
 
 
 Main:
+	execmacro $reg_filename, "0";
+	$$g_reg = getresultex(-1);
+	if(0 == strlen($$g_reg)){
+		message("エラー：返値が空白。\nファイル：" + $reg_filename);
+		return false;
+	}
+	
 	##old_column		= column;
 	##old_lineno		= lineno;
 	##old_seltopcolumn	= seltopcolumn;
@@ -25,10 +31,12 @@ Main:
 	
 	$$ret="";
 	if(selecting){
-		searchdown2 $g_reg,word,nocasesense,regular,inselect,nohilight;
+		//searchdown2 $$g_reg,word,nocasesense,regular,inselect,nohilight;
+		return gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
 	}else{
+		//ファイル全体から数値を抜き出す
 		gofiletop;
-		searchdown2 $g_reg,word,nocasesense,regular,nohilight;
+		searchdown2 $$g_reg,word,nocasesense,regular,nohilight;
 	}
 	while(result){
 		$$text 	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);

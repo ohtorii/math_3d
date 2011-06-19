@@ -1,0 +1,4 @@
+/*3D係数学を扱う秀丸マクロ
+2 -> 10進数へ変換。
+*/
+execmacro currentmacrodirectory + "\\" + "math_3d_prv_cmd.mac", "2_10";

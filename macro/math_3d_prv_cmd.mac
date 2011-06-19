@@ -1,0 +1,136 @@
+/*3D係数学を扱う秀丸マクロ
+
+内部利用。
+math_3d_cmd_*.mac から呼び出される。
+*/
+
+//事前に設定する
+$g_exe_filename = currentmacrodirectory + "\\" + "math_3d.exe";
+
+
+
+
+
+
+$g_exe_mode		= "";
+$g_searchbuffer = searchbuffer;
+#g_searchoption = searchoption;
+call Main;
+setsearch $g_searchbuffer, #g_searchoption;
+endmacro;
+
+Main:
+	if(! existfile($g_exe_filename)){
+		message("実行ファイルが見つかりません。\n"					+
+				"見つからないファイル：" + $g_exe_filename + "\n"	+
+				"マクロと同じディレクトリにコピーして下さい。"
+		);
+		return false;
+	}
+	if(1 != argcount){
+		message("引数の個数が不正です、引数は１個与えて下さい。\n");
+		return false;
+	}
+	$g_exe_mode = getarg(0);
+	if(! strlen($g_exe_mode)){
+		message("エラー：引数を与えて下さい。");
+		return false;
+	}
+	##old_column=column;
+	##old_lineno=lineno;
+	call Proc;
+	moveto2 ##old_column,##old_lineno;
+	return ;
+	
+Proc:	
+	if(rectselecting){
+		call ProcRecSelecting;
+		return ##return;
+	}
+	if(selecting){
+		call DoSelectWord;
+		return ##return;
+	}
+	call DoUnselectLine;
+	return ##return;
+
+
+ProcRecSelecting:
+	if(seltopx==selendx){
+		//
+		//縦一直線に選択している状態。
+		//
+		##old_seltopx	= seltopx;
+		##old_seltopy	= seltopy;
+		##old_selendx	= selendx;
+		##old_selendy	= selendy;
+
+		escape;
+		begingroupundo;
+		##y = ##old_seltopy;
+		while(##y <= ##old_selendy){
+			moveto ##old_seltopx,##y;
+			call DoUnselectLine;
+			if(! ##return){
+				return false;
+			}
+			##y=##y+1;
+		}
+		endgroupundo;
+	}else{
+		##old_seltopx		= seltopx;
+		##old_seltopy		= seltopy;
+		##old_selendx		= selendx;
+		##old_selendy		= selendy;
+		escape;
+		begingroupundo;
+		##y = ##old_seltopy;
+		while(##y <= ##old_selendy){
+			call SelectRange1 ##old_seltopx, ##y, ##old_selendx, ##y;
+			call DoSelectWord;
+			if(! ##return){
+				return false;
+			}
+			##y=##y+1;
+		}
+		endgroupundo;
+	}
+	return true;
+
+DoUnselectLine:
+	selectword;
+	call DoSelectWord;
+	return ##return;
+
+DoSelectWord:
+	//10秒待っても切り替えできないエラーを抑制。
+	//seterrormode 1, 0;
+	
+	$$arg = gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+	$$cmd = "\"" + $g_exe_filename + "\"" + " " + $g_exe_mode + " " + $$arg;
+	message($$cmd);
+	runex $$cmd
+		, 1 			//sync	  0:async 1:sync
+		, 0, "" 		//stdin   0:none 1:auto 2:file 3:(reserve) 4:all 5:select
+		, 6, "" 		//stdout  0:none 1:auto 2:file 3:add file  4:new 5:insert 6:replace 7:output枠
+		, 0, "" 		//stderr  0:none 1:=out 2:file 3:add file  4:new 5:insert 6:replace
+		, 0, "" 		//folder  0:none 1:current 2:specify 3:(reserve) 4:exe's folder
+		, 2 			//show	  0:auto 1:show 2:hide
+		, 1 			//nodraw  0:draw 1:no draw
+		, 0 			//unicode 0:ansi 2:unicode
+		;
+	##ret = result;
+	if(false == ##ret){
+		message("runexで失敗");
+		return false;
+	}
+	return true;	
+	
+
+SelectRange1:
+	escape;
+	moveto ##1, ##2;
+	beginsel;
+	moveto ##3, ##4;
+	endsel;
+	return ;
