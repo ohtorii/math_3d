@@ -45,6 +45,7 @@ Main:
 	return ;
 
 Proc:
+	disabledraw;
 	if(rectselecting){
 		call ProcRecSelecting;
 		return ##return;

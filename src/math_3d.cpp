@@ -7,7 +7,6 @@ arg1...N   modeに応じて必要な個数だけ
 
 
 (行列の並び)
-右手系,row vectors.
 *3x3
 	m00, m01, m02 | Tx
 	m10, m11, m12 | Ty
@@ -89,6 +88,8 @@ static void usage(){
         "  m33_yzx      matrix33          -> yzx(degree)\n"
         "  m33_xzy      matrix33          -> xzy(degree)\n"
         "  m33_xyz      matrix33          -> xyz(degree)\n"
+        "  v3l          quaternion length\n"
+        "  v3n          quaternion normalize\n"
         "\n"
         "unit\n"
         "  degree      0-360\n"
@@ -302,14 +303,26 @@ struct CQuaternion{
 
 };
 
-struct TTuple3{
-	TTuple3(){
+struct CTuple{
+	CTuple(){
 		x=0.f;
 		y=0.f;
 		z=0.f;
 	};
+	CTuple(float _x, float _y, float _z){
+		x = _x;
+		y = _y;
+		z = _z;
+	};
+	CTuple(const std::string &_x, const std::string &_y, const std::string &_z){
+		x = atof(_x.c_str());
+		y = atof(_y.c_str());
+		z = atof(_z.c_str());
+	}
 
-
+	float Length(){
+		return sqrt(x*x + y*y + z*z);
+	};
 	float x,y,z;
 };
 
@@ -324,9 +337,14 @@ static bool MatrixSub(const TArgInfo &info, FUNC f, size_t unit){
 	}
 
 	TArgInfo 	tmp = info;
+	int count=0;
 	while(unit <= tmp.m_arg.size()){
+		if(count){
+			printf("\n");
+		}
 		f(tmp);
 		tmp.m_arg.erase(tmp.m_arg.begin(), tmp.m_arg.begin()+unit);
+		count=1;
 	}
 	if(tmp.m_arg.size()){
 		printf("Warning:Remain %d.\n", tmp.m_arg.size());
@@ -562,6 +580,10 @@ static void Print(const TMatrix &m){
 
 static void Print(const CQuaternion &q){
 	printf("%f %f %f %f", q.x, q.y, q.z, q.w);
+}
+
+static void Print(const CTuple &t){
+	printf("%f %f %f", t.x, t.y, t.z);
 }
 
 static bool Float32ToHex(const TArgInfo &info){
@@ -1000,6 +1022,33 @@ static bool Mat33EulerXYZ(const TArgInfo &info){
 	return Mat33EulerCommon(info, EulOrdXYZs,"xyz");
 }
 
+/*
+引数：x y z 
+*/
+static bool Vector3Length(const TArgInfo &info){
+	const TString1D &tmp = info.m_arg;
+	CTuple t(tmp[0], tmp[1], tmp[2]);
+	printf("%f",t.Length());
+	return true;
+}
+
+/*
+引数：x y z 
+*/
+static bool Vector3Normalize(const TArgInfo &info){
+	const TString1D &tmp = info.m_arg;
+	CTuple t(tmp[0], tmp[1], tmp[2]);
+	float l = t.Length();
+	//if(l<EPSILON){
+	//}
+	float d = 1.f / l;
+	t.x *= d;
+	t.y *= d;
+	t.z *= d;
+	Print(t);
+	return true;
+}
+
 static void Mat33ToQuat(const TArgInfo &info){
 	TMatrix	m(info.m_arg);
 	CQuaternion q;
@@ -1121,6 +1170,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		result = MatrixSub(info,Mat33EulerXZY,9);
 	}else if("m33_xyz" == m){
 		result = MatrixSub(info,Mat33EulerXYZ,9);
+	}else if("v3l" == m){
+		result = MatrixSub(info,Vector3Length,3);
+	}else if("v3n" == m){
+		result = MatrixSub(info,Vector3Normalize,3);
 	}
 
 	if(result){

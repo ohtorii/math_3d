@@ -8,7 +8,8 @@ setcompatiblemode 0x0003|0x000c|0x0200|0x2000;
 $reg_filename 	= currentmacrodirectory+"\\math_3d_prv_reg.mac";
 $g_searchbuffer = searchbuffer;
 #g_searchoption = searchoption;
-disabledraw;
+disableinvert;
+//disabledraw;
 call Main;
 $ret = $$return;
 setsearch $g_searchbuffer, #g_searchoption; 
@@ -31,34 +32,87 @@ Main:
 	##old_selendlineno	= selendlineno;
 	
 	$$ret="";
-	if(selecting){
-		//searchdown2 $$g_reg,word,nocasesense,regular,inselect,nohilight;
-		return gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+	if(rectselecting){
+		call GetValueFromRec;
+		$$ret = $$return;
+		message $$ret;
 	}else{
-		//ファイル全体から数値を抜き出す
-		gofiletop;
-		searchdown2 $$g_reg,word,nocasesense,regular,nohilight;
-	}
-	while(result){
-		$$text 	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
-		$$ret 	= $$ret + "\"" + $$text + "\" ";
-		movetolineno selendcolumn+1, selendlineno;
-		if(! result){
-			break;
+		if(selecting){
+			//選択範囲から数値を抜き出す
+			searchdown2 $$g_reg,word,nocasesense,regular,inselect,nohilight;
+			//return gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+		}else{
+			//ファイル全体から数値を抜き出す
+			gofiletop;
+			searchdown2 $$g_reg,word,nocasesense,regular,nohilight;
 		}
-		finddown;
+		while(result){
+			$$text 	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+			$$ret 	= $$ret + "\"" + $$text + "\" ";
+			movetolineno selendcolumn+1, selendlineno;
+			if(! result){
+				break;
+			}
+			finddown;
+		}
 	}
-	
 	
 	moveto ##old_column, ##old_lineno;
 	//call SelectRange ##old_seltopcolumn,##old_seltoplineno,##old_selendcolumn,##old_selendlineno;	
 	return $$ret;
 
+GetValueFromRec:
+	$$ret="";
+	if(seltopx==selendx){
+		//
+		//縦一直線に選択している状態。
+		//
+		##old_seltopx	= seltopx;
+		##old_seltopy	= seltopy;
+		##old_selendx	= selendx;
+		##old_selendy	= selendy;
+
+		escape;
+		##y = ##old_seltopy;
+		while(##y <= ##old_selendy){
+			moveto ##old_seltopx,##y;
+			selectword;
+			$$text	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+			$$ret 	= $$ret + "\"" + $$text + "\" ";
+			##y=##y+1;
+		}
+	}else{
+		##old_seltopx		= seltopx;
+		##old_seltopy		= seltopy;
+		##old_selendx		= selendx;
+		##old_selendy		= selendy;
+		escape;
+		##y = ##old_seltopy;
+		while(##y <= ##old_selendy){
+			call SelectRange1 ##old_seltopx, ##y, ##old_selendx, ##y;
+			//selectword;
+			$$text	= gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+			$$ret 	= $$ret + "\"" + $$text + "\" ";
+			##y=##y+1;
+		}
+	}
+	escape;
+	return $$ret;
+	
+	
 SelectRange:
 	escape;
 	movetolineno 1+##1, ##2;
 	beginsel;
 	movetolineno 1+##3, ##4;
+	endsel;
+	return ;
+
+SelectRange1:
+	escape;
+	moveto ##1, ##2;
+	beginsel;
+	moveto ##3, ##4;
 	endsel;
 	return ;
 

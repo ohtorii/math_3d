@@ -129,9 +129,15 @@ $g_option[5][9]="m33_yzx";
 $g_option[5][10]="m33_xzy";
 $g_option[5][11]="m33_xyz";
 
+//[6]
+$g_menu_root[6]="vector3";
+$g_menu_sub[6][0]="vector3 length";
+$g_menu_sub[6][1]="vector3 normalize";
+$g_option[6][0]="v3l";
+$g_option[6][1]="v3n";
 
 //[2]
-$g_menu_root[6]="";//空白で終端
+$g_menu_root[7]="";//空白で終端
 
 
 
@@ -179,6 +185,7 @@ Main:
 	}
 
 	$$mode = $g_option[#g_menu_index0][#g_menu_index1];
+	//message $$args;
 	execmacro $g_filename_run, $g_stdout_mode, $$mode, $$args;
 	##ret = val(getresultex(-1));
 	return ##ret;
