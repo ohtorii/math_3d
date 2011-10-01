@@ -553,7 +553,7 @@ static void Print(const TMatrix &m){
 	printf(
 		"%f %f %f\n"
 		"%f %f %f\n"
-		"%f %f %f\n"
+		"%f %f %f"
 		, m.m00, m.m01, m.m02
 		, m.m10, m.m11, m.m12
 		, m.m20, m.m21, m.m22
@@ -561,7 +561,7 @@ static void Print(const TMatrix &m){
 }
 
 static void Print(const CQuaternion &q){
-	printf("%f %f %f %f\n", q.x, q.y, q.z, q.w);
+	printf("%f %f %f %f", q.x, q.y, q.z, q.w);
 }
 
 static bool Float32ToHex(const TArgInfo &info){
@@ -576,7 +576,7 @@ static bool Float32ToHex(const TArgInfo &info){
 			//printf("[%f]", x);
 			printf("0x%08x", *(uint32*)&x);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	if(n==0){
 		return false;
@@ -597,7 +597,7 @@ static bool Float64ToHex(const TArgInfo &info){
 			//printf("[%f]", x);
 			printf("0x%016I64x", *(uint64*)&x);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	if(n==0){
 		return false;
@@ -616,7 +616,7 @@ static bool HexToFloat32(const TArgInfo &info){
 			}
 			printf("%f", *(float*)&x);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	if(n==0){
 		return false;
@@ -636,7 +636,7 @@ static bool HexToFloat64(const TArgInfo &info){
 			//printf("[%016I64x]", x);
 			printf("%f", *(double*)&x);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	if(n==0){
 		return false;
@@ -660,7 +660,7 @@ static bool ConvertNumber(const TArgInfo &info, int dst, int src){
 			}
 			printf("%s",buf);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	if(n==0){
 		return false;
@@ -676,8 +676,12 @@ static bool RadianToDegree(const TArgInfo &info){
 
 	TString1D::const_iterator first = tmp.begin();
 	TString1D::const_iterator last 	= tmp.end();
-	for(; first!=last ; ++first){
-		printf("%f\n", rad2deg(atof(first->c_str())));
+	int i=0;
+	for(; first!=last ; ++first, ++i){
+		if(0<i){
+			printf("\n");
+		}
+		printf("%f", rad2deg(atof(first->c_str())));
 	}
 	return true;
 }
@@ -689,8 +693,12 @@ static bool DegreeToRadian(const TArgInfo &info){
 	}
 	TString1D::const_iterator first = tmp.begin();
 	TString1D::const_iterator last 	= tmp.end();
-	for(; first!=last ; ++first){
-		printf("%f\n", deg2rad(atof(first->c_str())));
+	int i=0;
+	for(; first!=last ; ++first, ++i){
+		if(0<i){
+			printf("\n");
+		}
+		printf("%f", deg2rad(atof(first->c_str())));
 	}
 	return true;
 }
@@ -709,7 +717,7 @@ static bool FovVerticalToHorizontal(const TArgInfo &info){
 	double fov = deg2rad(atof(tmp[2].c_str()));
 	double aspect = w/h;
 	double ans = rad2deg(2.0 * atan (aspect * tan(fov / 2.0) ));
-	printf("%f\n",ans);
+	printf("%f",ans);
 	return true;
 }
 
@@ -724,7 +732,7 @@ static bool FovHorizontalToVertical(const TArgInfo &info){
 	double fov = deg2rad(atof(tmp[2].c_str()));
 	double aspect = w/h;
 	double ans = rad2deg(2.0 * atan (tan(fov / 2.0) / aspect));
-	printf("%f\n", ans);
+	printf("%f", ans);
 	return true;
 }
 
@@ -734,7 +742,7 @@ static bool FovHorizontalToVertical(const TArgInfo &info){
 static bool QuatLength(const TArgInfo &info){
 	const TString1D &tmp = info.m_arg;
 	CQuaternion q(tmp[0], tmp[1], tmp[2], tmp[3]);
-	printf("%f\n",q.Length());
+	printf("%f",q.Length());
 	return true;
 }
 
@@ -810,7 +818,7 @@ static bool Mat33Transpose(const TArgInfo &info){
 static bool Mat33Determinant(const TArgInfo &info){
 	TMatrix		m(info.m_arg);
 	float d = m.Determinant();
-	printf("%f\n",d);
+	printf("%f",d);
 	return true;
 }
 
@@ -828,7 +836,7 @@ static bool Mat33Scale(const TArgInfo &info){
 				z=0.f;
 
 	m.ExtractScale(x,y,z);
-	printf("%f %f %f\n", x, y, z);
+	printf("%f %f %f", x, y, z);
 	return true;
 }
 
@@ -969,7 +977,7 @@ static bool Mat33EulerCommon(const TArgInfo &info, int EulOrd, const char*rot){
 
 	ConvertMatrix(r,m);
 	EulerAngles angles = Eul_FromHMatrix(r, EulOrd);
-	printf("%s=%f %f %f\n", rot, rad2deg(angles.x), rad2deg(angles.y), rad2deg(angles.z));
+	printf("%s=%f %f %f", rot, rad2deg(angles.x), rad2deg(angles.y), rad2deg(angles.z));
 	return true;
 }
 
