@@ -145,9 +145,7 @@ $g_menu_root[6]="";//空白で終端
 $g_stdout_mode = "7";	//アウトプット枠（秀丸マクロのヘルプを参照。runex関数）
 
 call Main;
-if(#g_dengaku_state){
-	freedll;
-}
+call FreeDengaku;
 endmacro;
 
 
@@ -173,8 +171,9 @@ Main:
 	if(! strlen($$select_item)){
 		return false;
 	}
-
-	call PaseMenuString $$select_item;
+	call FreeDengaku;
+	
+	call ParseMenuString $$select_item;
 	if(! ##return){
 	    return false;
 	}
@@ -221,7 +220,7 @@ PopupMenu:
 	return $$select_item;
 
 
-PaseMenuString:
+ParseMenuString:
 	/*
 	"12:34" ->  #g_menu_index0=12;
 				#g_menu_index1=33;
@@ -237,7 +236,6 @@ PaseMenuString:
 	#g_menu_index0 = val(midstr($$s,0,##i));
 	#g_menu_index1 = val(midstr($$s,##i+1)) - 1;
 	return true;
-
 
 LoadDengaku:
 	#g_dengaku_state=false;
@@ -255,3 +253,10 @@ LoadDengaku:
 	#g_dengaku_state=true;
 	return true;
 
+FreeDengaku:
+	if(#g_dengaku_state){
+		freedll;
+	}
+	#g_dengaku_state=false;
+	return ;
+	

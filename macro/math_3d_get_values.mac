@@ -5,10 +5,9 @@
 
 
 setcompatiblemode 0x0003|0x000c|0x0200|0x2000;
-$reg_filename 	= currentmacrodirectory+"\\math_3d_prv_reg.mac";
+$reg_filename 	= currentmacrodirectory+"\\math_3d_reg.mac";
 $g_searchbuffer = searchbuffer;
 #g_searchoption = searchoption;
-disabledraw;
 call Main;
 $ret = $$return;
 setsearch $g_searchbuffer, #g_searchoption; 
@@ -32,10 +31,8 @@ Main:
 	
 	$$ret="";
 	if(selecting){
-		//searchdown2 $$g_reg,word,nocasesense,regular,inselect,nohilight;
-		return gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
+		searchdown2 $$g_reg,word,nocasesense,regular,inselect,nohilight;
 	}else{
-		//ファイル全体から数値を抜き出す
 		gofiletop;
 		searchdown2 $$g_reg,word,nocasesense,regular,nohilight;
 	}

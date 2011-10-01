@@ -38,11 +38,13 @@ Main:
 	}
 	##old_column=column;
 	##old_lineno=lineno;
+	begingroupundo;
 	call Proc;
+	endgroupundo;
 	moveto2 ##old_column,##old_lineno;
 	return ;
-	
-Proc:	
+
+Proc:
 	if(rectselecting){
 		call ProcRecSelecting;
 		return ##return;
@@ -66,7 +68,6 @@ ProcRecSelecting:
 		##old_selendy	= selendy;
 
 		escape;
-		begingroupundo;
 		##y = ##old_seltopy;
 		while(##y <= ##old_selendy){
 			moveto ##old_seltopx,##y;
@@ -76,14 +77,12 @@ ProcRecSelecting:
 			}
 			##y=##y+1;
 		}
-		endgroupundo;
 	}else{
 		##old_seltopx		= seltopx;
 		##old_seltopy		= seltopy;
 		##old_selendx		= selendx;
 		##old_selendy		= selendy;
 		escape;
-		begingroupundo;
 		##y = ##old_seltopy;
 		while(##y <= ##old_selendy){
 			call SelectRange1 ##old_seltopx, ##y, ##old_selendx, ##y;
@@ -93,7 +92,6 @@ ProcRecSelecting:
 			}
 			##y=##y+1;
 		}
-		endgroupundo;
 	}
 	return true;
 
@@ -105,10 +103,10 @@ DoUnselectLine:
 DoSelectWord:
 	//10•b‘Ò‚Á‚Ä‚àØ‚è‘Ö‚¦‚Å‚«‚È‚¢ƒGƒ‰[‚ð—}§B
 	//seterrormode 1, 0;
-	
+
 	$$arg = gettext2(seltopcolumn,seltoplineno,selendcolumn,selendlineno,1);
 	$$cmd = "\"" + $g_exe_filename + "\"" + " " + $g_exe_mode + " " + $$arg;
-	message($$cmd);
+	//message($$cmd);
 	runex $$cmd
 		, 1 			//sync	  0:async 1:sync
 		, 0, "" 		//stdin   0:none 1:auto 2:file 3:(reserve) 4:all 5:select
@@ -124,8 +122,8 @@ DoSelectWord:
 		message("runex‚ÅŽ¸”s");
 		return false;
 	}
-	return true;	
-	
+	return true;
+
 
 SelectRange1:
 	escape;
