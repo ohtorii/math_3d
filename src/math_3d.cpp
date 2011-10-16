@@ -1141,23 +1141,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	}else if("m33_s" == m){
 		result = MatrixSub(info,Mat33Scale,9);
 	}else if("x_m33" == m){
-		result = Mat33RotX(info);
+		result = MatrixSub(info,Mat33RotX,1);
 	}else if("y_m33" == m){
-		result = Mat33RotY(info);
+		result = MatrixSub(info,Mat33RotY,1);
 	}else if("z_m33" == m){
-		result = Mat33RotZ(info);
+		result = MatrixSub(info,Mat33RotZ,1);
 	}else if("yxz_m33" == m){
-		result = Mat33RotYXZ(info);
+		result = MatrixSub(info,Mat33RotYXZ,3);
 	}else if("zxy_m33" == m){
-		result = Mat33RotZXY(info);
+		result = MatrixSub(info,Mat33RotZXY,3);
 	}else if("zyx_m33" == m){
-		result = Mat33RotZYX(info);
+		result = MatrixSub(info,Mat33RotZYX,3);
 	}else if("yzx_m33" == m){
-		result = Mat33RotYZX(info);
+		result = MatrixSub(info,Mat33RotYZX,3);
 	}else if("xzy_m33" == m){
-		result = Mat33RotXZY(info);
+		result = MatrixSub(info,Mat33RotXZY,3);
 	}else if("xyz_m33" == m){
-		result = Mat33RotXYZ(info);
+		result = MatrixSub(info,Mat33RotXYZ,3);
 	}else if("m33_yxz" == m){
 		result = MatrixSub(info,Mat33EulerYXZ,9);
 	}else if("m33_zxy" == m){
